@@ -5,8 +5,6 @@
             [clojure.tools.logging :as l])
   (:require [org.httpkit.client :as http])
   (:require [clojure.data.json :as json])
-  (:import [com.amazonaws.services.s3 AmazonS3 AmazonS3Client]
-           [com.amazonaws.services.s3.model GetObjectRequest PutObjectRequest])
   (:import [java.util.concurrent LinkedBlockingQueue]
            [com.twitter.hbc.httpclient.auth BasicAuth]
            [com.twitter.hbc ClientBuilder]

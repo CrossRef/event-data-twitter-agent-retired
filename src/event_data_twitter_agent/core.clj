@@ -1,6 +1,7 @@
 (ns event-data-twitter-agent.core
   (:require [event-data-twitter-agent.rules :as rules]
-            [event-data-twitter-agent.stream :as stream])
+            [event-data-twitter-agent.stream :as stream]
+            [event-data-twitter-agent.process :as process])
   (:require [config.core :refer [env]])
   (:require [clojure.set :as set]
             [clojure.tools.logging :as l])
@@ -37,6 +38,11 @@
   []
   (stream/run))
 
+(defn run-process
+  "Run the tweet processing."
+  []
+  (process/run))
+
 (defn invalid-command
   "An invalid command was given"
   [command]
@@ -57,4 +63,5 @@
   (condp = (first args)
     "update-rules" (update-rules)
     "ingest" (run-ingest)
+    "process" (run-process)
     (invalid-command (first args))))

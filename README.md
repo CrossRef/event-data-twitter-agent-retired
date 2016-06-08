@@ -29,6 +29,23 @@ To inget data from twitter and enqueue. This should run all the time.
     
     lein with-profile dev run ingest
 
+### Process
+
+To process tweets to extact events from them. This should be run all the time. This can be run in several parallel processes for load distribution.
+
+    lein with-profile dev run process
+
+## Plumbing
+
+Redis is used for short-term storage. Every day logs are flushed out to S3 storage. Lists named `queue` are pushed and popped and used as a queue, which should be remain a sensible size. Lists named `log` are accumulated over the course of a day and then uploaded to S3 then deleted.
+
+This is the pipeline:
+
+ - inputs from Gnip -> `input-queue` and -> `input-log-YYYY-MM-DD`
+ - `input-queue` -> processing to extract DOIs -> `matched-queue` and `matched-log-YYYY-MM-DD` on success, `unmatched-log-YYYY-MM-DD.
+ - `matched-queue` -> Lagotto upload
+ - `input-log-YYYY-MM-DD`, `matched-log-YYYY-MM-DD`, `unmatched-log-YYYY-MM-DD` uploaded to S3 every day then cleared.
+
 
 ## License
 
