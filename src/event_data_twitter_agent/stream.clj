@@ -20,17 +20,20 @@
    - postedTime - string ISO8601 Z directly from twitter
    - postedDate - string ISO8601 Z truncated to day
    - body - body text
-   - urls - list of URLs"
+   - urls - list of URLs
+   - matchingRules - list or Gnip rules that resulted in the match, for diagnostic purposes"
   [input-string]
   (let [parsed (json/read-str input-string)
         posted-time (get-in parsed ["postedTime"])
         year-month-day (.substring posted-time 0 10)
-        urls (map #(get % "expanded_url") (get-in parsed ["gnip" "urls"])) ]
+        urls (map #(get % "expanded_url") (get-in parsed ["gnip" "urls"]))
+        matching-rules (map #(get % "value") (get-in parsed ["gnip" "matching_rules"]))]
   {"tweetId" (get parsed "id")
    "postedTime" posted-time
    "postedDate" year-month-day
    "body" (get parsed "body")
-   "urls" urls}))
+   "urls" urls
+   "matchingRules" matching-rules}))
 
 (defn run
   "Run the stream ingestion.
