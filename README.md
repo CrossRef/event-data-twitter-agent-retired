@@ -27,7 +27,7 @@ To update the rules with the latest set of domains, once a month or so. This wil
 
 To inget data from twitter and enqueue. This should run all the time.
     
-    lein with-profile dev run update-rules
+    lein with-profile dev run ingest
 
 
 ## License
