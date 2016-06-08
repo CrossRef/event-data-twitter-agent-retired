@@ -4,6 +4,8 @@ Agent for collecting event data from Gnip's Twitter data source and pushing into
 
 Depends on Gnip service and S3 for storage. 
 
+Work-in-progress as of June 2016.
+
 ## S3 Structure
 
 Archives data in an S3 bucket.
