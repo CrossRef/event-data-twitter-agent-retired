@@ -1,5 +1,6 @@
 (ns event-data-twitter-agent.core
-  (:require [event-data-twitter-agent.rules :as rules])
+  (:require [event-data-twitter-agent.rules :as rules]
+            [event-data-twitter-agent.stream :as stream])
   (:require [config.core :refer [env]])
   (:require [clojure.set :as set]
             [clojure.tools.logging :as l])
@@ -15,6 +16,8 @@
     :gnip-rules-url ; URL Endpoint for fetching and updating rules.
     :gnip-username ; Username for Gnip API Access.
     :gnip-password ; Password for Gnip API Access.
+    :redis-host ; host running redis server
+    :redis-port ; port of redis server
   })
 
 (defn missing-config-keys
@@ -28,6 +31,11 @@
   "Update the Gnip rules. Sends new rules to Gnip and archives."
   []
   (rules/update-all))
+
+(defn run-ingest
+  "Run the stream ingestion client."
+  []
+  (stream/run))
 
 (defn invalid-command
   "An invalid command was given"
@@ -48,4 +56,5 @@
 
   (condp = (first args)
     "update-rules" (update-rules)
+    "ingest" (run-ingest)
     (invalid-command (first args))))

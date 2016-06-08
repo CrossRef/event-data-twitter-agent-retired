@@ -8,7 +8,9 @@
                  [org.clojure/tools.logging "0.3.1"]
                  [com.amazonaws/aws-java-sdk "1.11.6"]
                  [http-kit "2.1.18"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [com.twitter/hbc-core "2.2.0"]
+                 [redis.clients/jedis "2.8.0"]]
   :main ^:skip-aot event-data-twitter-agent.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}

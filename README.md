@@ -23,6 +23,13 @@ To update the rules with the latest set of domains, once a month or so. This wil
 
     lein with-profile dev run update-rules
 
+### Ingest
+
+To inget data from twitter and enqueue. This should run all the time.
+    
+    lein with-profile dev run update-rules
+
+
 ## License
 
 Copyright © 2016 Crossref
