@@ -10,7 +10,10 @@
                  [http-kit "2.1.18"]
                  [org.clojure/data.json "0.2.6"]
                  [com.twitter/hbc-core "2.2.0"]
-                 [redis.clients/jedis "2.8.0"]]
+                 [redis.clients/jedis "2.8.0"]
+                 [org.apache.httpcomponents/httpclient "4.5.2"]
+                 [org.slf4j/slf4j-simple "1.7.21"]]
+                 
   :main ^:skip-aot event-data-twitter-agent.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}

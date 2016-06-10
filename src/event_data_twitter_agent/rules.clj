@@ -11,7 +11,16 @@
            [java.text SimpleDateFormat])
   (:gen-class))
 
-(def hardcoded-rules #{"url_contains:\"doi.org/10.\""})
+
+(def hardcoded-rules
+  "Rules that are hard-coded and aren't be derived from data."
+  #{"url_contains:\"doi.org/10.\""})
+
+(def excluded-domains
+  "Rules that can never match. Manually curated."
+  #{
+    "issuu.com" ; This never serves any metadata and isn't really a publishing platform.
+  })
 
 (defn- utc-timestamp
   []
@@ -57,9 +66,13 @@
         (.delete tempfile)))
 
 (defn- create-rule-from-domain
-  "Create a Gnip rule from a full domain, e.g. www.xyz.com"
+  "Create a Gnip rule from a full domain, e.g. www.xyz.com, if valid or nil."
   [full-domain]
-  (str "url_contains:\"//" full-domain "/\""))
+  ; Basic sense check.
+  (when (and
+      (> (.length full-domain) 3)
+      (not (excluded-domains full-domain)))
+    (str "url_contains:\"//" full-domain "/\"")))
 
 (defn- create-rule-from-prefix
   "Create a Gnip rule from a DOI prefix, e.g. 10.5555"
@@ -69,8 +82,8 @@
 (defn- fetch-up-to-date-rules
   "Fetch a new set of rules from the DOI Destinations service."
   []
-  (let [domain-rules (->> env :member-domains-url http/get deref :body json/read-str (map create-rule-from-domain) set)
-        prefix-rules (->> env :member-prefixes-url http/get deref :body json/read-str (map create-rule-from-prefix) set)]
+  (let [domain-rules (->> env :member-domains-url http/get deref :body json/read-str (keep create-rule-from-domain) set)
+        prefix-rules (->> env :member-prefixes-url http/get deref :body json/read-str (keep create-rule-from-prefix) set)]
     (clojure.set/union hardcoded-rules domain-rules prefix-rules)))
 
 (defn- add-rules

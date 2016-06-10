@@ -11,11 +11,22 @@
   (:import [java.util UUID])
   (:gen-class))
 
+(defn query-reverse-api
+  "Query the reverse API with a URL or a snippet of text."
+  [query]
+  (let [response @(http/get (:reverse-api-url env) {:query-params {"q" query}})]
+    (when (= 200 (:status response))
+      (:body response))))
+
 (defn extract-dois
   "Accept a hashmap of the kind generated in event-data-twitter-agent.stream and return a seq of DOIs."
   [item]
   ; For now, none. Automatic failure.
-  [])
+  (let [link-dois (map query-reverse-api (get item "urls"))
+        doi-from-body (query-reverse-api (get item "body"))
+        all-dois (distinct (remove nil? (cons doi-from-body link-dois)))]
+      (l/info "Extract from" item "got" (doall all-dois))
+    all-dois))
 
 (defn- new-uuid []
   (.toString (UUID/randomUUID)))

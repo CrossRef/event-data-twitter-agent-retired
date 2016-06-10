@@ -19,6 +19,7 @@
     :gnip-password ; Password for Gnip API Access.
     :redis-host ; host running redis server
     :redis-port ; port of redis server
+    :reverse-api-url ; URL of DOI reversal URL
   })
 
 (defn missing-config-keys
