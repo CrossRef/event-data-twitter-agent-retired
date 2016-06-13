@@ -1,8 +1,11 @@
 (ns event-data-twitter-agent.core
   (:require [event-data-twitter-agent.rules :as rules]
             [event-data-twitter-agent.stream :as stream]
-            [event-data-twitter-agent.process :as process])
+            [event-data-twitter-agent.process :as process]
+            [event-data-twitter-agent.persist :as persist])
   (:require [config.core :refer [env]])
+  (:require [clj-time.core :as clj-time]
+            [clj-time.format :as clj-time-format])
   (:require [clojure.set :as set]
             [clojure.tools.logging :as l])
   (:gen-class))
@@ -44,6 +47,21 @@
   []
   (process/run))
 
+(def ymd (clj-time-format/formatter "yyyy-MM-dd"))
+
+(defn run-daily
+  "Run daily tasks. Stashing logs. This will run the last 30 days' worth of daily tasks (starting with yesterday) if they haven't been done."
+  []
+  (let [interval-range (map #(clj-time/minus (clj-time/now) (clj-time/days %)) (range 1 30))
+        ; as strings of YYYY-MM-DD
+        ymd-range (map #(clj-time-format/unparse ymd %) interval-range)]
+    (l/info "Checking " (count ymd-range) "past days")
+    (doseq [date-str ymd-range]
+      (l/info "Check " date-str)
+      (persist/stash-list (str "input-log-" date-str) (str "logs/" date-str "/input.jsonlist"))
+      (persist/stash-list (str "matched-log-" date-str) (str "logs/" date-str "/matched.jsonlist"))
+      (persist/stash-list (str "unmatched-log-" date-str) (str "logs/" date-str "/unmatched.jsonlist")))))
+
 (defn invalid-command
   "An invalid command was given"
   [command]
@@ -65,4 +83,5 @@
     "update-rules" (update-rules)
     "ingest" (run-ingest)
     "process" (run-process)
+    "daily" (run-daily)
     (invalid-command (first args))))
