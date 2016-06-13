@@ -22,6 +22,7 @@
     :gnip-password ; Password for Gnip API Access.
     :redis-host ; host running redis server
     :redis-port ; port of redis server
+    :redis-db-number ; redis database number to use
     :reverse-api-url ; URL of DOI reversal URL
   })
 

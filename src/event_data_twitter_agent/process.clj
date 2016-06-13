@@ -1,6 +1,7 @@
 (ns event-data-twitter-agent.process
   "Process input queue."
   (:require [config.core :refer [env]])
+  (:require [event-data-twitter-agent.util :as util])
   (:require [clojure.set :as set]
             [clojure.tools.logging :as l])
   (:require [org.httpkit.client :as http])
@@ -35,7 +36,7 @@
   "Run and block, processing input queue.
   This can safely run in a few processes concurrently."
   []
-  (let [^Jedis redis-conn (new Jedis (:redis-host env) (Integer/parseInt (:redis-port env)))]
+  (let [^Jedis redis-conn (util/jedis-connection)]
     (loop []
       ; See http://redis.io/commands/rpoplpush for reliable queue pattern.
       (let [item-str (.brpoplpush redis-conn "input-queue" "input-put-queue-working" 0)

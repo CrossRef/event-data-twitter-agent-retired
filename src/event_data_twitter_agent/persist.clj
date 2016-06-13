@@ -1,5 +1,6 @@
 (ns event-data-twitter-agent.persist
   "Persist things in storage (S3)."
+  (:require [event-data-twitter-agent.util :as util])
   (:require [config.core :refer [env]])
   (:require [clojure.tools.logging :as l])
   (:require [org.httpkit.client :as http])
@@ -14,7 +15,6 @@
            [com.twitter.hbc.core.endpoint RealTimeEnterpriseStreamingEndpoint]
            [redis.clients.jedis Jedis])
   (:import [com.amazonaws.services.s3 AmazonS3 AmazonS3Client]
-           [com.amazonaws.auth BasicAWSCredentials]
            [com.amazonaws.services.s3.model GetObjectRequest PutObjectRequest])
   (:gen-class))
 
@@ -22,7 +22,7 @@
   "Upload a file, return true if it worked."
   [local-file remote-name]
   (l/info "Uploading" local-file "to" remote-name)
-  (let [^AmazonS3 client (new AmazonS3Client (new BasicAWSCredentials (:s3-access-key-id env) (:s3-secret-access-key env)))
+  (let [^AmazonS3 client (util/aws-client)
         request (new PutObjectRequest (:archive-s3-bucket env) remote-name local-file)
         put-result (.putObject client request)]
     
@@ -36,7 +36,7 @@
   [list-name remote-name]
   (l/info "Attempt stash" list-name " -> " remote-name)
   (let [tempfile (java.io.File/createTempFile "event-data-twitter-agent-stash" nil)
-        ^Jedis redis-conn (new Jedis (:redis-host env) (Integer/parseInt (:redis-port env)))
+        ^Jedis redis-conn (util/jedis-connection)
         list-range (.lrange redis-conn list-name 0 -1)
         counter (atom 0)
         key-exists (.exists redis-conn list-name)]

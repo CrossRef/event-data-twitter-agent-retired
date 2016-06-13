@@ -1,6 +1,7 @@
 (ns event-data-twitter-agent.stream
   "Handle Gnip's stream and put into Redis."
   (:require [config.core :refer [env]])
+  (:require [event-data-twitter-agent.util :as util])
   (:require [clojure.set :as set]
             [clojure.tools.logging :as l])
   (:require [org.httpkit.client :as http])
@@ -42,7 +43,7 @@
    - 'input-log-YYYY-MM-DD' - the log of inputs. This is written to a log file.
   Blocks forever."
   []
-  (let [^Jedis redis-conn (new Jedis (:redis-host env) (Integer/parseInt (:redis-port env)))
+  (let [^Jedis redis-conn (util/jedis-connection)
         q (new LinkedBlockingQueue 1000) 
         client (-> (new ClientBuilder)
                    (.hosts Constants/ENTERPRISE_STREAM_HOST)

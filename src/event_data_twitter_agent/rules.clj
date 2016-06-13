@@ -1,12 +1,12 @@
 (ns event-data-twitter-agent.rules
   "Handle Gnip's subscription rules."
+  (:require [event-data-twitter-agent.util :as util])
   (:require [config.core :refer [env]])
   (:require [clojure.set :as set]
             [clojure.tools.logging :as l])
   (:require [org.httpkit.client :as http])
   (:require [clojure.data.json :as json])
   (:import [com.amazonaws.services.s3 AmazonS3 AmazonS3Client]
-           [com.amazonaws.auth BasicAWSCredentials]
            [com.amazonaws.services.s3.model GetObjectRequest PutObjectRequest])
   (:import [java.util TimeZone Date]
            [java.text SimpleDateFormat])
@@ -52,7 +52,7 @@
 (defn archive-rules
   "Archive the current list of rules to the log on S3. Save as both 'current' and timestamp."
   [rules]
-  (let [^AmazonS3 client (new AmazonS3Client (new BasicAWSCredentials (:s3-access-key-id env) (:s3-secret-access-key env)))
+  (let [^AmazonS3 client (util/aws-client)
         current-keyname "filter-rules/current.json"
         timestamp-keyname (str "filter-rules/" (utc-timestamp) ".json")
 
