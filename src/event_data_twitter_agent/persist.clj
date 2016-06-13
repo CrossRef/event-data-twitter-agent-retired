@@ -14,6 +14,7 @@
            [com.twitter.hbc.core.endpoint RealTimeEnterpriseStreamingEndpoint]
            [redis.clients.jedis Jedis])
   (:import [com.amazonaws.services.s3 AmazonS3 AmazonS3Client]
+           [com.amazonaws.auth BasicAWSCredentials]
            [com.amazonaws.services.s3.model GetObjectRequest PutObjectRequest])
   (:gen-class))
 
@@ -21,7 +22,7 @@
   "Upload a file, return true if it worked."
   [local-file remote-name]
   (l/info "Uploading" local-file "to" remote-name)
-  (let [^AmazonS3 client (new AmazonS3Client)
+  (let [^AmazonS3 client (new AmazonS3Client (new BasicAWSCredentials (:s3-access-key-id env) (:s3-secret-access-key env)))
         request (new PutObjectRequest (:archive-s3-bucket env) remote-name local-file)
         put-result (.putObject client request)]
     

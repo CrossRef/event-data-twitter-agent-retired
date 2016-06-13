@@ -37,6 +37,12 @@ To process tweets to extact events from them. This should be run all the time. T
 
     lein with-profile dev run process
 
+### Daily cron job
+
+Daily jobs. Upload logs.
+
+    lein with-profile dev run daily
+
 ## Plumbing
 
 Redis is used for short-term storage. Every day logs are flushed out to S3 storage. Lists named `queue` are pushed and popped and used as a queue, which should be remain a sensible size. Lists named `log` are accumulated over the course of a day and then uploaded to S3 then deleted.
