@@ -59,9 +59,9 @@
     (l/info "Checking " (count ymd-range) "past days")
     (doseq [date-str ymd-range]
       (l/info "Check " date-str)
-      (persist/stash-jsonapi-list (str "input-log-" date-str) (str "logs/" date-str "/input.json") "twitter-input")
-      (persist/stash-jsonapi-list (str "matched-log-" date-str) (str "logs/" date-str "/matched.json") "twitter-match")
-      (persist/stash-jsonapi-list (str "unmatched-log-" date-str) (str "logs/" date-str "/unmatched.json") "twitter-match"))))
+      (persist/stash-jsonapi-redis-list (str "input-log-" date-str) (str "logs/" date-str "/input.json") "twitter-input")
+      (persist/stash-jsonapi-redis-list (str "matched-log-" date-str) (str "logs/" date-str "/matched.json") "twitter-match")
+      (persist/stash-jsonapi-redis-list (str "unmatched-log-" date-str) (str "logs/" date-str "/unmatched.json") "twitter-match"))))
 
 (defn invalid-command
   "An invalid command was given"

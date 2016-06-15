@@ -1,6 +1,7 @@
 (ns event-data-twitter-agent.rules
   "Handle Gnip's subscription rules."
-  (:require [event-data-twitter-agent.util :as util])
+  (:require [event-data-twitter-agent.util :as util]
+            [event-data-twitter-agent.persist :as persist])
   (:require [config.core :refer [env]])
   (:require [clojure.set :as set]
             [clojure.tools.logging :as l])
@@ -54,17 +55,9 @@
   [rules]
   (let [^AmazonS3 client (util/aws-client)
         current-keyname "filter-rules/current.json"
-        timestamp-keyname (str "filter-rules/" (utc-timestamp) ".json")
-
-        tempfile (java.io.File/createTempFile "event-data-twitter-agent" nil)
-        rules-json (json/write-str rules)]
-
-        (spit tempfile rules-json)
-
-        (.putObject client (new PutObjectRequest (:archive-s3-bucket env) current-keyname tempfile))
-        (.putObject client (new PutObjectRequest (:archive-s3-bucket env) timestamp-keyname tempfile))
-
-        (.delete tempfile)))
+        timestamp-keyname (str "filter-rules/" (utc-timestamp) ".json")]
+    (persist/stash-jsonapi-list rules current-keyname "gnip-rule")
+    (persist/stash-jsonapi-list rules timestamp-keyname "gnip-rule")))
 
 (defn- create-rule-from-domain
   "Create a Gnip rule from a full domain, e.g. www.xyz.com, if valid or nil."
@@ -110,11 +103,13 @@
   (let [current-rule-set (fetch-rules-in-play)
         new-rules-set (fetch-up-to-date-rules)
         rules-to-add (clojure.set/difference new-rules-set current-rule-set)
-        rules-to-remove (clojure.set/difference current-rule-set new-rules-set)]
+        rules-to-remove (clojure.set/difference current-rule-set new-rules-set)
+        ; Format for saving in archive.
+        new-rules-to-save (map #(hash-map "rule" %) new-rules-set)]
     (l/info "Current rules " (count current-rule-set) ", up to date rules " (count new-rules-set))
     (l/info "Add" (count rules-to-add) ", remove " (count rules-to-remove))
 
-    (archive-rules new-rules-set)
+    (archive-rules new-rules-to-save)
     (add-rules rules-to-add)
     (remove-rules rules-to-remove)
 
