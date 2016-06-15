@@ -59,9 +59,9 @@
     (l/info "Checking " (count ymd-range) "past days")
     (doseq [date-str ymd-range]
       (l/info "Check " date-str)
-      (persist/stash-list (str "input-log-" date-str) (str "logs/" date-str "/input.jsonlist"))
-      (persist/stash-list (str "matched-log-" date-str) (str "logs/" date-str "/matched.jsonlist"))
-      (persist/stash-list (str "unmatched-log-" date-str) (str "logs/" date-str "/unmatched.jsonlist")))))
+      (persist/stash-jsonapi-list (str "input-log-" date-str) (str "logs/" date-str "/input.json") "twitter-input")
+      (persist/stash-jsonapi-list (str "matched-log-" date-str) (str "logs/" date-str "/matched.json") "twitter-match")
+      (persist/stash-jsonapi-list (str "unmatched-log-" date-str) (str "logs/" date-str "/unmatched.json") "twitter-match"))))
 
 (defn invalid-command
   "An invalid command was given"
@@ -70,7 +70,6 @@
   (System/exit 1))
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
   (l/info "Starting Event Data Twitter Agent")
 

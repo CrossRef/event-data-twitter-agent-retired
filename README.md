@@ -12,6 +12,7 @@ Archives data in an S3 bucket.
 
  - `«s3-bucket»/rules/current.json` - current set of Gnip rules in play. Rules saved as a JSON array of Gnip rules.
  - `«s3-bucket»/rules/«iso-8601-date».json` - all rule updates. Rules saved as a JSON array of Gnip rules.
+ - `«s3-bucket»/logs/«YYYY-MM-DD»/input.json` - input events
 
 ## Config
 
@@ -53,7 +54,7 @@ Redis is used for short-term storage. Every day logs are flushed out to S3 stora
 Cron:
 
     # daily log rotation
-    0 5 * * 1 cd /home/deploy/event-data-twitter-agent && lein with-profile prod run daily
+    0 5 * * * cd /home/deploy/event-data-twitter-agent && lein with-profile prod run daily
 
     # monthly rule update
     0 0 1 * * cd /home/deploy/event-data-twitter-agent && lein with-profile prod run update-rules

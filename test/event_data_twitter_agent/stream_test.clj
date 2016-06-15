@@ -10,6 +10,7 @@
            {"tweetId" "tag:search.twitter.com,2005:740507302185336832",
             "postedTime" "2016-06-08T11:34:33.000Z",
             "postedDate" "2016-06-08",
+            "author" "http://www.twitter.com/michaelkinder",
             "body" "RT @NPPTL: Ponerse y Quitarse Adecuadamente un #Respirador Desechable https://t.co/WFnvmG7mN6 NIOSH Pub 2010-133sp How to don and doff",
             "urls" ["http://www.cdc.gov/spanish/niosh/docs/2010-133_sp/pdfs/2010-133_sp.pdf"]
             "matchingRules" ["url_contains:\"//www.cdc.gov/\""]}))))

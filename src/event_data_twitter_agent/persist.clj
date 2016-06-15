@@ -6,7 +6,6 @@
   (:require [org.httpkit.client :as http])
   (:require [clojure.data.json :as json]
             [clojure.java.io :as io])
-  (:require [robert.bruce :refer [try-try-again]])
   (:import [java.util.concurrent LinkedBlockingQueue]
            [com.twitter.hbc.httpclient.auth BasicAuth]
            [com.twitter.hbc ClientBuilder]
@@ -18,22 +17,10 @@
            [com.amazonaws.services.s3.model GetObjectRequest PutObjectRequest])
   (:gen-class))
 
-(defn upload
-  "Upload a file, return true if it worked."
-  [local-file remote-name]
-  (l/info "Uploading" local-file "to" remote-name)
-  (let [^AmazonS3 client (util/aws-client)
-        request (new PutObjectRequest (:archive-s3-bucket env) remote-name local-file)
-        put-result (.putObject client request)]
-    
-    ; S3 isn't transactional, may take a while to propagate. Try a few times to see if it uploaded OK, return success.
-    (try-try-again {:sleep 5000 :tries 10 :return? :truthy?} (fn []
-      (.doesObjectExist client  (:archive-s3-bucket env) remote-name)))))
-
-(defn stash-list
-  "Stash a list of strings into a file in S3 and remove the key, if the key exists.
-  In practice this will be a list of JSON objects."
-  [list-name remote-name]
+(defn stash-jsonapi-list
+  "Get a named Redis list containing JSON strings.
+   Stash into a file in S3 using JSONAPI format and remove the key from Redis, if the key exists."
+  [list-name remote-name json-api-type]
   (l/info "Attempt stash" list-name " -> " remote-name)
   (let [tempfile (java.io.File/createTempFile "event-data-twitter-agent-stash" nil)
         ^Jedis redis-conn (util/jedis-connection)
@@ -45,17 +32,18 @@
       (l/info "Key" list-name "did not exist. This is expected for anything older than yesterday.")
       (do 
         (l/info "Key" list-name "found")
-      
-        ; Write each line in the list separated by newline
-        (with-open [writer (io/writer tempfile)]
-          (doseq [line list-range]
-            (swap! counter inc)
-            (.write writer line)
-            (.write writer "\n")))
+        (let [parsed-list (map json/read-str list-range)
+              decorated (map #(assoc % "type" json-api-type) parsed-list)
+              api-object {"meta" {"status" "ok" 
+                                  "type" json-api-type}
+                          "data" decorated}]
+          (with-open [writer (io/writer tempfile)]
+            (json/write api-object writer)))
+        
         (l/info "Saved " @counter "lines to" tempfile)
 
         ; If the upload worked OK, delete from Redis.
-        (if-not (upload tempfile remote-name)
+        (if-not (util/upload-file tempfile remote-name "application/json")
           (l/error "Failed to upload to " remote-name "!")
           (do
             (l/info "Successful upload, delete list from Redis " list-name)

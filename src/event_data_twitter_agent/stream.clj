@@ -30,6 +30,7 @@
         urls (map #(get % "expanded_url") (get-in parsed ["gnip" "urls"]))
         matching-rules (map #(get % "value") (get-in parsed ["gnip" "matching_rules"]))]
   {"tweetId" (get parsed "id")
+   "author" (get-in parsed ["actor" "link"])
    "postedTime" posted-time
    "postedDate" year-month-day
    "body" (get parsed "body")
