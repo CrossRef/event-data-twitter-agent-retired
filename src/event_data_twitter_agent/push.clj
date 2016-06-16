@@ -34,6 +34,7 @@
                            :obj_id (cr-doi/normalise-doi obj-doi)
                            :relation_type_id relation-type
                            :source_id source-id
+                           :occurred_at date-str
                            :subj subject_metadata}}
           "remove" {:deposit {:uuid event-id
                               :message_action "delete"
@@ -42,6 +43,7 @@
                               :obj_id (cr-doi/normalise-doi obj-doi)
                               :relation_type_id relation-type
                               :source_id source-id
+                              :occurred_at date-str
                               :subj subject_metadata}}
           nil)]
         (l/info "Sending payload" payload)
