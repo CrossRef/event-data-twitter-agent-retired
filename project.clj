@@ -14,6 +14,7 @@
                  [org.apache.httpcomponents/httpclient "4.5.2"]
                  [org.slf4j/slf4j-simple "1.7.21"]
                  [clj-time "0.12.0"]
+                 [crossref-util "0.1.10"]
                  [robert/bruce "0.8.0"]]
                  
   :main ^:skip-aot event-data-twitter-agent.core

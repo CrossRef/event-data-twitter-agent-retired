@@ -2,7 +2,8 @@
   (:require [event-data-twitter-agent.rules :as rules]
             [event-data-twitter-agent.stream :as stream]
             [event-data-twitter-agent.process :as process]
-            [event-data-twitter-agent.persist :as persist])
+            [event-data-twitter-agent.persist :as persist]
+            [event-data-twitter-agent.push :as push])
   (:require [config.core :refer [env]])
   (:require [clj-time.core :as clj-time]
             [clj-time.format :as clj-time-format])
@@ -24,6 +25,10 @@
     :redis-port ; port of redis server
     :redis-db-number ; redis database number to use
     :reverse-api-url ; URL of DOI reversal URL
+
+    :lagotto-push-endpoint
+    :lagotto-source-token
+    :lagotto-auth-token
   })
 
 (defn missing-config-keys
@@ -39,14 +44,21 @@
   (rules/update-all))
 
 (defn run-ingest
-  "Run the stream ingestion client."
+  "Run the stream ingestion client. Runs forever."
   []
   (stream/run))
 
 (defn run-process
-  "Run the tweet processing."
+  "Run the tweet processing. Runs forever, more than one can be run at once."
   []
   (process/run))
+
+(defn run-push
+  "Run the event pushing. Runs forever."
+  []
+  (push/run))
+
+
 
 (def ymd (clj-time-format/formatter "yyyy-MM-dd"))
 
@@ -83,5 +95,6 @@
     "update-rules" (update-rules)
     "ingest" (run-ingest)
     "process" (run-process)
+    "push" (run-push)
     "daily" (run-daily)
     (invalid-command (first args))))

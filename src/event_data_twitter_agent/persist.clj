@@ -44,7 +44,7 @@
 
 (defn stash-jsonapi-redis-list
   "Get a named Redis list containing JSON strings.
-   Stash into a file in S3 using JSONAPI format and remove the key from Redis, if the key exists."
+   Stash into a file in S3 using JSONAPI format."
   [list-name remote-name json-api-type]
   (l/info "Attempt stash" list-name " -> " remote-name)
   (let [^Jedis redis-conn (util/jedis-connection)
