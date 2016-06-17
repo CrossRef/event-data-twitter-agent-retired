@@ -53,7 +53,7 @@
     (if-not key-exists
       (l/info "Key" list-name "did not exist. This is expected for anything older than yesterday.")  
       (let [parsed-list (map json/read-str list-range)
-            success (stash-jsonapi-list parsed-list)]
+            success (stash-jsonapi-list remote-name parsed-list json-api-type)]
         (when success
           (.del redis-conn (into-array [list-name])))))))
 
