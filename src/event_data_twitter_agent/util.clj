@@ -24,8 +24,13 @@
 (defn upload-file
   "Upload a file, return true if it worked."
   [local-file remote-name content-type]
-  (l/info "Uploading" local-file "to" remote-name ".")
-  (let [^AmazonS3 client (aws-client)
+  (if (.doesObjectExist client  (:archive-s3-bucket env) remote-name)
+    (do
+      (l/error "NOT uploading" local-file "to" remote-name ", already exists")
+      false)
+    (do 
+      (l/info "Uploading" local-file "to" remote-name ".")
+      (let [^AmazonS3 client (aws-client)
         request (new PutObjectRequest (:archive-s3-bucket env) remote-name local-file)
         metadata (new ObjectMetadata)]
         (.setContentType metadata content-type)
@@ -33,5 +38,5 @@
         (.putObject client request)
     
     ; S3 isn't transactional, may take a while to propagate. Try a few times to see if it uploaded OK, return success.
-    (try-try-again {:sleep 5000 :tries 10 :return? :truthy?} (fn []
-      (.doesObjectExist client  (:archive-s3-bucket env) remote-name)))))
+     (try-try-again {:sleep 5000 :tries 10 :return? :truthy?} (fn []
+        (.doesObjectExist client  (:archive-s3-bucket env) remote-name)))))))
