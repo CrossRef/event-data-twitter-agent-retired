@@ -18,7 +18,7 @@
 
         subject_metadata {"pid" subj-url
                           "author" {"literal" subj-author}
-                          "title" subj-container-title
+                          "title" subj-title
                           "container-title" subj-container-title
                           "issued" date-str
                           "URL" subj-url
