@@ -80,8 +80,7 @@
 
         command (first args)]
 
-    (when-not (baleen/boot! context)
-      (System/exit 1))
+    (baleen/boot! context)
 
     (l/info "Command: " command)
 
