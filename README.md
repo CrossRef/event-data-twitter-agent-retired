@@ -86,6 +86,14 @@ This is the pipeline:
  - `matched-queue` -> Lagotto upload
  - `input-log-YYYY-MM-DD`, `matched-log-YYYY-MM-DD`, `unmatched-log-YYYY-MM-DD` uploaded to S3 every day then cleared.
 
+## Install on production
+
+`lein uberjar` to compile. Systemd scripts in `etc`:
+
+ - `event-data-twitter-agent-ingest.service`
+ - `event-data-twitter-agent-monitor.service`
+ - `event-data-twitter-agent-process.service`
+ - `event-data-twitter-agent-push.service`
 
 ## License
 
