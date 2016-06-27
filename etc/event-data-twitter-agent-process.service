@@ -4,10 +4,10 @@ After=redis-server.service
 
 [Service]
 Type=simple
-PIDFile=/var/run/event-data-wikipedia-agent-process.pid
-WorkingDirectory=/home/deploy/event-data-wikipedia-agent
-Environment=CONFIG=/home/deploy/event-data-wikipedia-agent/config/prod/config.edn
-ExecStart=/usr/bin/java -jar /home/deploy/event-data-wikipedia-agent/target/uberjar/event-data-wikipedia-agent-0.1.0-SNAPSHOT-standalone.jar process
+PIDFile=/var/run/event-data-twitter-agent-process.pid
+WorkingDirectory=/home/deploy/event-data-twitter-agent
+Environment=CONFIG=/home/deploy/event-data-twitter-agent/config/prod/config.edn
+ExecStart=/usr/bin/java -jar /home/deploy/event-data-twitter-agent/target/uberjar/event-data-twitter-agent-0.1.0-SNAPSHOT-standalone.jar process
 Restart=on-abort
 User=deploy
 
