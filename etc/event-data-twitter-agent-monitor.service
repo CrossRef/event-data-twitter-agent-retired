@@ -8,7 +8,7 @@ PIDFile=/var/run/event-data-twitter-agent-monitor.pid
 WorkingDirectory=/home/deploy/event-data-twitter-agent
 Environment=CONFIG=/home/deploy/event-data-twitter-agent/config/prod/config.edn
 ExecStart=/usr/bin/java -jar /home/deploy/event-data-twitter-agent/target/uberjar/event-data-twitter-agent-0.1.0-SNAPSHOT-standalone.jar monitor
-Restart=on-abort
+Restart=always
 User=deploy
 
 [Install]
